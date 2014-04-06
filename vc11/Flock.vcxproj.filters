@@ -147,9 +147,6 @@
     <ClCompile Include="..\src\SpringCam.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Desktop\cinder_0.8.5_vc2012\src\cinder\gl\Texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\HeadCam.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -192,5 +189,10 @@
     <None Include="..\resources\glow.frag">
       <Filter>Resource Files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -25,8 +25,8 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-#define APP_WIDTH		2560
-#define APP_HEIGHT		720
+#define APP_WIDTH		1024 //2560
+#define APP_HEIGHT		480 //800
 #define ROOM_WIDTH		600
 #define ROOM_HEIGHT		400
 #define ROOM_DEPTH		600
@@ -156,7 +156,7 @@ void FlockingApp::setup()
 	mSpringCam.mCenter = Vec3f(0,0, ROOM_DEPTH / 2 );
 	
 	// Set up a listener for OSC messages
-	oscListener.setup(7110);
+	oscListener.setup(7111);
 
 	// Setup the camera for the main window
 	mHeadCam0 = HeadCam( 1210.0f, getWindowAspectRatio() );
@@ -867,66 +867,23 @@ void FlockingApp::update()
 	//if( mMousePressed ){
 	//	mActiveCam.dragCam( ( mMouseOffset ) * 0.01f, ( mMouseOffset ).length() * 0.01f );
 	//}
+	
+	Vec3f topLeft = Vec3f(-ROOM_WIDTH/2, ROOM_HEIGHT/2, ROOM_DEPTH/2);
+	Vec3f bottomLeft = Vec3f(-ROOM_WIDTH/2, -ROOM_HEIGHT/2, ROOM_DEPTH/2);
+	Vec3f bottomRight = Vec3f(ROOM_WIDTH/2, -ROOM_HEIGHT/2, ROOM_DEPTH/2);
 
-	Vec3f projectionEye = mHeadCam0.mEye;
-	projectionEye.x = mHeadCam0.mCenter.x;
-	projectionEye.y = mHeadCam0.mCenter.y;
-
-	float zOffset = projectionEye.z - mHeadCam0.mCenter.z;
-	// We have to adjust the camera to take into account that it
-	//  doesn't distort enough past the edge of the screen
-	float r = 0.0f; 
-	float camXStorage = mHeadCam0.mEye.x;
-	if (mHeadCam0.mEye.x < -300){
-		r = (mHeadCam0.mEye.x + (ROOM_WIDTH / 2 )) / (mHeadCam0.mEye.z - (ROOM_DEPTH / 2));
-		mHeadCam0.mEye.x += r * mHeadCam0.mEye.z;
-	}
-
-	Vec3f bottomLeft = Vec3f(-300, -200, -zOffset);
-	Vec3f bottomRight = Vec3f(300, -200, -zOffset);
-	Vec3f topLeft = Vec3f(-300, 200, -zOffset);
-
-	mHeadCam0.update(projectionEye, bottomLeft, bottomRight, topLeft);
-	// Restore our camera position
-	mHeadCam0.mEye.x = camXStorage;
+	mHeadCam0.update(topLeft, bottomLeft, bottomRight, 10000);
 
 	console() << "cam0 position" << mHeadCam0.mEye << std::endl;
-	console() << "projectionEye position" << projectionEye << std::endl;
-	// Make sure to set it back, so updating doesn't make this fly away...
 	// Now update Camera 1
-	
-	float xOffset = projectionEye.x - mHeadCam1.mCenter.x;
-	
-	// The values we pass into update for the bounds and the projectionEye need to 
-	//  be coordinates relative to the camera, but mHeadCam1 is in global coordinates!
-	bottomLeft = Vec3f(-300, -200, mHeadCam1.mEye.x + 300);//xOffset);
-	bottomRight = Vec3f(300, -200, mHeadCam1.mEye.x + 300);//xOffset);
-	topLeft = Vec3f(-300, 200, mHeadCam1.mEye.x + 300);//xOffset);
-	
-	projectionEye.y = mHeadCam1.mCenter.y;
-	projectionEye.z = mHeadCam1.mCenter.z;
 
-	Vec3f tempEye = mHeadCam1.mEye;
-	// Again, I don't know why I've got to multiply this by 2
-	mHeadCam1.mEye.x = tempEye.z;
-	mHeadCam1.mEye.z = -tempEye.x;
-		
-	projectionEye = Vec3f(-mHeadCam1.mEye.z,0, 0);
+	topLeft = Vec3f(-ROOM_WIDTH/2, ROOM_HEIGHT/2, -ROOM_DEPTH/2);
+	bottomLeft = Vec3f(-ROOM_WIDTH/2, -ROOM_HEIGHT/2, -ROOM_DEPTH/2);
+	bottomRight = Vec3f(-ROOM_WIDTH/2, -ROOM_HEIGHT/2, ROOM_DEPTH/2);
 
-	// Again, we have to adjust for the incorrect camera correction
-	if (mHeadCam1.mEye.x > 300){
-		r = (mHeadCam1.mEye.x - (ROOM_DEPTH / 2 )) / (mHeadCam1.mEye.z - (ROOM_WIDTH / 2));
-		mHeadCam1.mEye.x += r * mHeadCam1.mEye.z;
-	}
-	
-	console() << "ratio is : " << r << std::endl;
-	
-	mHeadCam1.update(projectionEye, bottomLeft, bottomRight, topLeft);
+	mHeadCam1.update(topLeft, bottomLeft, bottomRight, 10000);
 	
 	console() << "cam1 position" << mHeadCam1.mEye << std::endl;
-	console() << "projectionEye position" << projectionEye << std::endl;
-	mHeadCam1.mEye.x = tempEye.x;
-	mHeadCam1.mEye.z = tempEye.z;
 
 
 
